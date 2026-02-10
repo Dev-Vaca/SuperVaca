@@ -15,7 +15,6 @@ struct Order: Identifiable, Codable {
     var items: [CartItemSnapshot]
     var totalAmount: Double
     var shippingAddress: Address
-    var paymentCard: PaymentCard
     var status: String // "pending", "shipping", "delivered"
     var date: Date
     

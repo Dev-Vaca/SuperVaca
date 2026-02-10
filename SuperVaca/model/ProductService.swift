@@ -10,7 +10,7 @@ import Foundation
 class ProductService {
     
     // Pega aquí tu URL de npoint.io
-    private let urlString = "https://api.npoint.io/097f9efbfa469302949d"
+    private let urlString = "https://api.npoint.io/5cfa8adf44e86b3c115b"
     
     func fetchProducts() async throws -> [Product] {
         // 1. Validar URL

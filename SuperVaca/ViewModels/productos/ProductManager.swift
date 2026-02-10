@@ -30,6 +30,9 @@ class ProductManager: ObservableObject {
             let fetched = try await service.fetchProducts()
             DispatchQueue.main.async {
                 self.products = fetched
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    self.preloadImages()
+                }
                 self.isLoading = false
                 print("✅ Catálogo central cargado: \(fetched.count) productos")
             }
@@ -42,5 +45,16 @@ class ProductManager: ObservableObject {
     // Helper para obtener un producto por su ID rápidamente
     func getProduct(byId id: String) -> Product? {
         return products.first(where: { $0.id == id })
+    }
+    
+    func preloadImages() {
+        for product in products {
+            guard let url = product.imageURL else { continue }
+            
+            // Cargar en background
+            DispatchQueue.global(qos: .utility).async {
+                _ = ImageCache.shared.load(url: url) { _ in }
+            }
+        }
     }
 }

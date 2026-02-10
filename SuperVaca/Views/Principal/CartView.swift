@@ -227,7 +227,7 @@ struct CartView: View {
     }
 }
 
-// MARK: - Fila del Carrito (Sin Cambios)
+// MARK: - Fila del Carrito (CON CACHÉ DE IMÁGENES)
 struct CartRowView: View {
     let product: Product
     let cartItem: CartItem
@@ -256,21 +256,16 @@ struct CartRowView: View {
     
     var body: some View {
         HStack(spacing: 15) {
-            AsyncImage(url: product.imageURL) { phase in
-                switch phase {
-                case .success(let image):
-                    image.resizable().aspectRatio(contentMode: .fit)
-                case .failure:
-                    Image(systemName: "photo").foregroundColor(.gray.opacity(0.3))
-                default:
-                    ProgressView()
-                }
-            }
+            // ✅ SOLO CAMBIO: AsyncImage → CachedAsyncImage
+            CachedAsyncImage(
+                url: product.imageURL,
+                placeholder: Image(systemName: "photo"),
+                maxRetries: 3
+            )
             .frame(width: 80, height: 80)
             .cornerRadius(12)
             .padding(5)
             .background(Color.white)
-            .id(product.imageURLString)
             
             VStack(alignment: .leading, spacing: 5) {
                 Text(product.name).font(.system(size: 16, weight: .bold)).lineLimit(1)

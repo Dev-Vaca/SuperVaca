@@ -49,12 +49,11 @@ struct ProductDetailView: View {
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
-                
+              
                 // ------------------------------------------------
                 // 1. HEADER (Imagen y Navegación)
                 // ------------------------------------------------
                 ZStack(alignment: .topLeading) {
-                    Color(.systemGray6).ignoresSafeArea()
                     
                     VStack {
                         // Navbar
@@ -87,9 +86,9 @@ struct ProductDetailView: View {
                         }
                         .padding(.horizontal)
                         .padding(.top, 10)
-                        
+                       
                         Spacer()
-                        
+                       
                         // Imagen
                         AsyncImage(url: product.imageURL) { phase in
                             switch phase {
@@ -102,7 +101,7 @@ struct ProductDetailView: View {
                                     Color.white.opacity(0.5)
                                     Image(systemName: "photo")
                                         .font(.system(size: 40))
-                                        .foregroundColor(.gray.opacity(0.3))
+                                        .foregroundColor(.gray) // Cambié a gris para que se note sobre blanco
                                 }
                                 .frame(height: geometry.size.height * 0.30)
                             }
@@ -111,16 +110,20 @@ struct ProductDetailView: View {
                     }
                 }
                 .frame(height: geometry.size.height * 0.40)
+                // --- CAMBIO IMPORTANTE AQUÍ ---
+                .background(Color.white) // Forzamos el fondo blanco en el header
+                // -----------------------------
                 .clipShape(RoundedCornerShape(radius: 30, corners: [.bottomLeft, .bottomRight]))
+                // Bajé un poco la opacidad de la sombra para que sea muy sutil sobre el fondo blanco
                 .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
                 .zIndex(1)
-                
+              
                 // ------------------------------------------------
                 // 2. DETALLES (Scroll)
                 // ------------------------------------------------
                 ScrollView {
                     VStack(alignment: .leading, spacing: 25) {
-                        
+                       
                         // Títulos
                         VStack(alignment: .leading, spacing: 8) {
                             if product.isOffer {
@@ -143,9 +146,9 @@ struct ProductDetailView: View {
                                     .foregroundColor(.gray)
                             }
                         }
-                        
+                       
                         Divider()
-                        
+                       
                         // Descripción
                         VStack(alignment: .leading, spacing: 10) {
                             Text("Descripción")
@@ -155,9 +158,9 @@ struct ProductDetailView: View {
                                 .foregroundColor(.gray)
                                 .lineSpacing(5)
                         }
-                        
+                       
                         Divider()
-                        
+                       
                         // ------------------------------------------------
                         // SELECTOR DE CANTIDAD INTELIGENTE
                         // ------------------------------------------------
@@ -188,7 +191,7 @@ struct ProductDetailView: View {
                                         .onChange(of: quantityInput) { newValue in
                                             validateInput(newValue)
                                         }
-                                    
+                                   
                                     Text(cleanedUnit)
                                         .font(.system(size: 14, weight: .semibold, design: .rounded))
                                         .foregroundColor(.gray)
@@ -207,13 +210,13 @@ struct ProductDetailView: View {
                             .background(Color(.systemGray6))
                             .clipShape(Capsule())
                         }
-                        
+                       
                         Spacer().frame(height: 100)
                     }
                     .padding(25)
                 }
                 .onTapGesture { isInputActive = false }
-                
+              
                 // ------------------------------------------------
                 // 3. BARRA INFERIOR (Agregar al Carrito)
                 // ------------------------------------------------
@@ -248,7 +251,7 @@ struct ProductDetailView: View {
             }
         }
         .navigationBarHidden(true)
-        .background(Color.white.ignoresSafeArea())
+        .background(Color.white.ignoresSafeArea()) // Fondo global blanco
     }
     
     // MARK: - Lógica de Validación y Actualización
@@ -256,7 +259,7 @@ struct ProductDetailView: View {
     // Función de botones (+ / -)
     func updateQuantity(add: Bool) {
         var current = Double(quantityInput) ?? 0.0
-        
+       
         if add {
             current += step
         } else {
@@ -266,7 +269,7 @@ struct ProductDetailView: View {
                 current = 0
             }
         }
-        
+       
         // Formatear de vuelta a String
         if current.truncatingRemainder(dividingBy: 1) == 0 {
             quantityInput = String(format: "%.0f", current)
@@ -278,14 +281,14 @@ struct ProductDetailView: View {
     // VALIDACIÓN ESTRICTA (Igual que en CartView)
     func validateInput(_ newValue: String) {
         if newValue.isEmpty { return }
-        
+       
         // 1. Filtrar caracteres no numéricos
         let filtered = newValue.filter { "0123456789.".contains($0) }
         if filtered != newValue {
             quantityInput = filtered
             return
         }
-        
+       
         // 2. Revisar decimales
         if let dotIndex = newValue.firstIndex(of: ".") {
             let decimals = newValue[newValue.index(after: dotIndex)...]
@@ -294,7 +297,7 @@ struct ProductDetailView: View {
                 quantityInput = String(newValue.dropLast())
             }
         }
-        
+       
         // 3. Evitar múltiples puntos
         if newValue.filter({ $0 == "." }).count > 1 {
             quantityInput = String(newValue.dropLast())
@@ -304,17 +307,17 @@ struct ProductDetailView: View {
     // Agregar al carrito
     func addToCart() {
         var finalQty = Double(quantityInput) ?? 0.0
-        
+       
         if !isDecimalAllowed {
             finalQty = round(finalQty)
         }
-        
+       
         guard finalQty > 0 else { return }
-        
+       
         CartManager.shared.addToCart(productId: product.id, quantity: finalQty)
-        
+       
         print("🛒 Agregando \(finalQty) \(cleanedUnit)")
-        
+       
         let impact = UIImpactFeedbackGenerator(style: .medium)
         impact.impactOccurred()
         presentationMode.wrappedValue.dismiss()

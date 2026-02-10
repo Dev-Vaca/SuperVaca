@@ -186,9 +186,9 @@ extension AuthenticationViewModel {
         // Usa ese número y código fijo aquí.
         // Si usas un dispositivo real, Firebase usará reCAPTCHA invisible o notificaciones push para verificar.
         
-        #if targetEnvironment(simulator)
+#if targetEnvironment(simulator)
         Auth.auth().settings?.isAppVerificationDisabledForTesting = true
-        #endif
+#endif
         
         PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { [weak self] verificationID, error in
             DispatchQueue.main.async {
@@ -245,7 +245,23 @@ extension AuthenticationViewModel {
                 // cerrando esta vista y mostrando la pantalla principal.
                 print("Login con teléfono exitoso para: \(authResult?.user.uid ?? "N/A")")
                 // Limpiamos el ID usado
-                 UserDefaults.standard.removeObject(forKey: "authVerificationID")
+                UserDefaults.standard.removeObject(forKey: "authVerificationID")
+            }
+        }
+    }
+    
+    func resetPassword(email: String, completion: @escaping (Bool, String) -> Void) {
+        // Validar que haya escrito algo
+        guard !email.isEmpty else {
+            completion(false, "Por favor escribe tu correo electrónico en el campo de texto primero.")
+            return
+        }
+
+        Auth.auth().sendPasswordReset(withEmail: email) { error in
+            if let error = error {
+                completion(false, error.localizedDescription)
+            } else {
+                completion(true, "Se ha enviado un enlace a tu correo. Revisa tu bandeja de entrada (y spam).")
             }
         }
     }

@@ -210,27 +210,21 @@ struct ExploreView: View {
     }
 }
 
-// MARK: - Componente: Tarjeta de Grid (Optimizado)
+// MARK: - Componente: Tarjeta de Grid (OPTIMIZADO CON CACHÉ)
 struct GridProductCardView: View {
     let product: Product
     
     var body: some View {
         VStack(alignment: .leading) {
-            // Imagen
+            // Imagen CON CACHÉ Y REINTENTOS
             ZStack(alignment: .center) {
                 Color.white
                 
-                // Usamos la URL directa con AsyncImage (ya debe estar en caché del sistema)
-                AsyncImage(url: product.imageURL) { phase in
-                    if let image = phase.image {
-                        image.resizable().aspectRatio(contentMode: .fit)
-                    } else if phase.error != nil {
-                        Image(systemName: "photo").foregroundColor(.gray.opacity(0.3))
-                    } else {
-                        // Placeholder mientras carga (si no está en caché aún)
-                        ProgressView()
-                    }
-                }
+                CachedAsyncImage(
+                    url: product.imageURL,
+                    placeholder: Image(systemName: "photo"),
+                    maxRetries: 3
+                )
                 .frame(height: 100)
                 .frame(maxWidth: .infinity)
                 .padding(.top, 10)

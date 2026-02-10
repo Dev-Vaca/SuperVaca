@@ -17,6 +17,11 @@ struct LoginView: View {
     @State private var isRegistering = false
     @State private var showingPhoneLogin = false
     
+    // ESTADOS PARA LA RECUPERACIÓN DE CONTRASEÑA
+    @State private var showResetAlert = false
+    @State private var resetMessage = ""
+    @State private var isResetSuccess = false
+    
     // MARK: - Body
     var body: some View {
         // GeometryReader reemplaza a UIScreen.main para obtener dimensiones seguras
@@ -24,25 +29,22 @@ struct LoginView: View {
             ZStack(alignment: .top) {
                 
                 // 1. Imagen de Cabecera
-                // Se posiciona en el tope y ocupa un 35% de la altura de la pantalla
                 Image("sign_in_top")
                     .resizable()
                     .scaledToFill()
                     .frame(width: geo.size.width, height: geo.size.height * 0.35)
-                    .clipped() // Evita que la imagen se desborde fuera de su frame
+                    .clipped()
                     .ignoresSafeArea(.all, edges: .top)
                 
                 // 2. Contenedor Principal (Scrollable)
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 25) {
                         
-                        // Espaciador invisible para empujar el contenido debajo de la imagen
+                        // Espaciador invisible
                         Spacer()
                             .frame(height: geo.size.height * 0.30)
                         
                         // --- Tarjeta de Contenido ---
-                        // Usamos un fondo blanco con esquinas redondeadas superiores
-                        // para crear el efecto de "tarjeta" sobre la imagen.
                         VStack(alignment: .leading, spacing: 30) {
                             
                             // Cabecera de Texto
@@ -57,7 +59,7 @@ struct LoginView: View {
                             }
                             .padding(.top, 10)
                             
-                            // Inputs (Extraídos a componentes para limpieza)
+                            // Inputs
                             VStack(spacing: 25) {
                                 MinimalInput(title: "Correo Electrónico", placeholder: "ejemplo@correo.com", text: $email, keyboard: .emailAddress)
                                 
@@ -65,16 +67,24 @@ struct LoginView: View {
                                     MinimalSecureInput(title: "Contraseña", placeholder: "••••••••", text: $password)
                                     
                                     if !isRegistering {
-                                        Button("¿Olvidaste tu contraseña?") {
-                                            // Acción recuperar
+                                        // BOTÓN DE RECUPERAR CONTRASEÑA (ACTUALIZADO)
+                                        Button(action: {
+                                            // Llamamos a la función de reset
+                                            viewModel.resetPassword(email: email) { success, message in
+                                                self.isResetSuccess = success
+                                                self.resetMessage = message
+                                                self.showResetAlert = true
+                                            }
+                                        }) {
+                                            Text("¿Olvidaste tu contraseña?")
+                                                .font(.system(size: 14, weight: .medium))
+                                                .foregroundColor(.black)
                                         }
-                                        .font(.system(size: 14, weight: .medium))
-                                        .foregroundColor(.black)
                                     }
                                 }
                             }
                             
-                            // Errores
+                            // Errores Generales (Login/Registro)
                             if let error = viewModel.errorMessage {
                                 Text(error)
                                     .foregroundColor(.red)
@@ -120,11 +130,11 @@ struct LoginView: View {
                             }
                             .padding(.vertical, 10)
                             
-                            // Botones Sociales (Google y Teléfono)
+                            // Botones Sociales
                             VStack(spacing: 15) {
                                 SocialLoginButton(
                                     text: "Continuar con Google",
-                                    imageName: "google_logo", // Asegúrate que esté en Assets
+                                    imageName: "google_logo",
                                     bgColor: .googleBlue,
                                     isSystemImage: false
                                 ) {
@@ -141,23 +151,29 @@ struct LoginView: View {
                                 }
                             }
                             
-                            // Espacio extra al final para scroll cómodo
                             Spacer().frame(height: 50)
                             
                         }
                         .padding(.horizontal, 25)
                         .background(Color.white)
-                        // Efecto visual: Curva suave en la parte superior del formulario
                         .cornerRadius(25, corners: [.topLeft, .topRight])
                         
-                    } // Fin VStack Contenido
-                } // Fin ScrollView
+                    }
+                }
             }
             .ignoresSafeArea(.container, edges: .top)
-            .background(Color.white) // Fondo base
+            .background(Color.white)
         }
         .sheet(isPresented: $showingPhoneLogin) {
             PhoneLoginView(viewModel: viewModel)
+        }
+        // ALERTA PARA LA RECUPERACIÓN DE CONTRASEÑA [Cite: Firebase Documentation for password reset]
+        .alert(isPresented: $showResetAlert) {
+            Alert(
+                title: Text(isResetSuccess ? "Correo Enviado" : "Aviso"),
+                message: Text(resetMessage),
+                dismissButton: .default(Text("Entendido"))
+            )
         }
     }
     
@@ -176,9 +192,7 @@ struct LoginView: View {
     }
 }
 
-// MARK: - Subcomponentes Minimalistas (Helpers)
-// Extraemos estos componentes para mantener el código principal limpio
-
+// ... (El resto de tus estructuras MinimalInput, MinimalSecureInput, etc. se quedan igual)
 struct MinimalInput: View {
     var title: String
     var placeholder: String
@@ -197,7 +211,7 @@ struct MinimalInput: View {
                 .font(.system(size: 18))
                 .foregroundColor(.black)
             
-            Divider() // La línea divisoria limpia
+            Divider()
         }
     }
 }
@@ -222,33 +236,6 @@ struct MinimalSecureInput: View {
     }
 }
 
-struct SocialButtonContent: View {
-    var text: String
-    var image: String
-    var isSystem: Bool
-    
-    var body: some View {
-        HStack(spacing: 15) {
-            if isSystem {
-                Image(systemName: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 22, height: 22)
-                    .foregroundColor(.white)
-            } else {
-                Image(image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 22, height: 22)
-            }
-            Text(text)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundColor(.white)
-        }
-    }
-}
-
-// Botón genérico para Google/Teléfono
 struct SocialLoginButton: View {
     var text: String
     var imageName: String
@@ -284,7 +271,6 @@ struct SocialLoginButton: View {
     }
 }
 
-// Utilidad para redondear esquinas específicas
 struct RoundedCorner: Shape {
     var radius: CGFloat = .infinity
     var corners: UIRectCorner = .allCorners
@@ -296,11 +282,5 @@ struct RoundedCorner: Shape {
 extension View {
     func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
         clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
-
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
     }
 }

@@ -78,12 +78,12 @@ struct FavoriteRowView: View {
     
     var body: some View {
         HStack {
-            // Imagen pequeña
-            AsyncImage(url: product.imageURL) { image in
-                image.resizable().aspectRatio(contentMode: .fit)
-            } placeholder: {
-                Color.gray.opacity(0.1)
-            }
+            // ✅ CAMBIO: AsyncImage → CachedAsyncImage
+            CachedAsyncImage(
+                url: product.imageURL,
+                placeholder: Image(systemName: "photo"),
+                maxRetries: 3
+            )
             .frame(width: 70, height: 70)
             .cornerRadius(10)
             .padding(5)

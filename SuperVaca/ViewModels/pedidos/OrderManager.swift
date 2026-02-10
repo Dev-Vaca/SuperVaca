@@ -62,7 +62,6 @@ class OrderManager: ObservableObject {
             items: orderItems,
             totalAmount: total,
             shippingAddress: address,
-            paymentCard: card,
             status: "pending", // Estado inicial: Pendiente
             date: Date()
         )

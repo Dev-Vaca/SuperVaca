@@ -31,11 +31,6 @@ struct HomeView: View {
                         .padding(.bottom, 10)
                         .padding(.top, 10)
                     
-                    // Barra de Búsqueda
-                    searchBar
-                        .padding(.horizontal)
-                        .padding(.bottom, 15)
-                    
                     // Contenido
                     if isLoading {
                         Spacer()
