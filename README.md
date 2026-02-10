@@ -12,12 +12,12 @@
 
 | Login & Auth | Home / Catálogo | Explorador | Detalle de Producto |
 |:---:|:---:|:---:|:---:|
-| ![Login View](https://github.com/Dev-Vaca/SuperVaca/blob/main/login.png) | ![Home View](https://github.com/Dev-Vaca/SuperVaca/blob/main/home.png) | ![Explore View]([./Screenshots/explore.png](https://github.com/Dev-Vaca/SuperVaca/blob/main/explorador.png)) | ![Detail View]([./Screenshots/detail.png](https://github.com/Dev-Vaca/SuperVaca/blob/main/detail.png)) |
+| ![Login View](https://github.com/Dev-Vaca/SuperVaca/blob/main/login.png) | ![Home View](https://github.com/Dev-Vaca/SuperVaca/blob/main/home.png) | ![Explore View](https://github.com/Dev-Vaca/SuperVaca/blob/main/explorador.png) | ![Detail View](https://github.com/Dev-Vaca/SuperVaca/blob/main/detail.png) |
 | *Autenticación Segura* | *Novedades y Ofertas* | *Búsqueda por Categorías* | *Info Nutricional y Precio* |
 
 | Favoritos | Carrito de Compras | Mi Cuenta |
 |:---:|:---:|:---:|
-| ![Favorites View]([./Screenshots/favorites.png](https://github.com/Dev-Vaca/SuperVaca/blob/main/fav.png)) | ![Cart View]([./Screenshots/cart.png](https://github.com/Dev-Vaca/SuperVaca/blob/main/car.png)) | ![Account View]([./Screenshots/account.png](https://github.com/Dev-Vaca/SuperVaca/blob/main/cuenta.png)) |
+| ![Favorites View](https://github.com/Dev-Vaca/SuperVaca/blob/main/fav.png) | ![Cart View](https://github.com/Dev-Vaca/SuperVaca/blob/main/car.png) | ![Account View](https://github.com/Dev-Vaca/SuperVaca/blob/main/cuenta.png) |
 | *Lista de Deseos* | *Gestión de Pedidos* | *Perfil y Configuración* |
 
 
